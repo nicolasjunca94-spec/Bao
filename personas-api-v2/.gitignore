@@ -66,3 +66,8 @@ local.settings.json
 
 # Logs
 *.log
+
+local.settings.json
+.venv
+.python_packages
+__pycache__
