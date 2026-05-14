@@ -340,7 +340,9 @@ def login(req: func.HttpRequest) -> func.HttpResponse:
             
 @app.route(route="chat", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
-
+    print("CHAT EJECUTANDO")
+    print("BODY:", req.get_body())
+    
     try:
 
         data = req.get_json()
@@ -349,7 +351,7 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
         mensaje = data.get("mensaje")
 
         model = genai.GenerativeModel("gemini-2.5-flash-lite")
-
+        print("ANTES GEMINI")
         prompt = f"""
 Actúa como un asistente de bienestar emocional llamado "Bao".
 
@@ -404,7 +406,7 @@ Responde únicamente en formato JSON con esta estructura:
 No incluyas texto fuera del JSON.
 """
         response = model.generate_content(prompt)
-
+        print(response.text)
         return func.HttpResponse(
             json.dumps({
                 "respuesta": response.text
@@ -414,8 +416,10 @@ No incluyas texto fuera del JSON.
         )
 
     except Exception as e:
-
+        print("ERROR REAL:")
+        print(repr(e))
         return func.HttpResponse(
+            
             json.dumps({"error": str(e)}),
             mimetype="application/json",
             status_code=500

@@ -70,4 +70,27 @@ local.settings.json
 local.settings.json
 .venv
 .python_packages
-__pycache__
+__pycache__https://go.microsoft.com/fwlink/?linkid=2271136
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+build/
+
+# Azure
+.azure/
+
+# VS Code
+.vscode/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
