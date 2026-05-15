@@ -1,4 +1,3 @@
-import google as genai
 import google.generativeai as genai
 import azure.functions as func
 import json
@@ -6,6 +5,9 @@ import logging
 import os
 import psycopg2
 
+# =========================
+# CONFIG GEMINI
+# =========================
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = func.FunctionApp()
@@ -40,10 +42,12 @@ def registrar_error(cursor, metodo, endpoint, mensaje, detalle=""):
 # =========================
 @app.route(route="personas", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def obtener_personas(req: func.HttpRequest) -> func.HttpResponse:
+
     conn = None
     cursor = None
 
     try:
+
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -70,7 +74,9 @@ def obtener_personas(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     except Exception as e:
+
         logging.error(str(e))
+
         return func.HttpResponse(
             json.dumps({"error": str(e)}),
             status_code=500,
@@ -78,8 +84,10 @@ def obtener_personas(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     finally:
+
         if cursor:
             cursor.close()
+
         if conn:
             conn.close()
 
@@ -89,10 +97,12 @@ def obtener_personas(req: func.HttpRequest) -> func.HttpResponse:
 # =========================
 @app.route(route="personas/{id}", methods=["GET"], auth_level=func.AuthLevel.ANONYMOUS)
 def obtener_persona(req: func.HttpRequest) -> func.HttpResponse:
+
     conn = None
     cursor = None
 
     try:
+
         persona_id = req.route_params.get("id")
 
         if not persona_id:
@@ -105,7 +115,11 @@ def obtener_persona(req: func.HttpRequest) -> func.HttpResponse:
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM core.personas WHERE id=%s", (persona_id,))
+        cursor.execute(
+            "SELECT * FROM core.personas WHERE id=%s",
+            (persona_id,)
+        )
+
         row = cursor.fetchone()
 
         if not row:
@@ -127,11 +141,14 @@ def obtener_persona(req: func.HttpRequest) -> func.HttpResponse:
 
         return func.HttpResponse(
             json.dumps(persona),
-            mimetype="application/json"
+            mimetype="application/json",
+            status_code=200
         )
 
     except Exception as e:
+
         logging.error(str(e))
+
         return func.HttpResponse(
             json.dumps({"error": str(e)}),
             status_code=500,
@@ -139,8 +156,10 @@ def obtener_persona(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     finally:
+
         if cursor:
             cursor.close()
+
         if conn:
             conn.close()
 
@@ -150,12 +169,15 @@ def obtener_persona(req: func.HttpRequest) -> func.HttpResponse:
 # =========================
 @app.route(route="personas", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
 def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
+
     conn = None
     cursor = None
 
     try:
+
         try:
             data = req.get_json()
+
         except:
             return func.HttpResponse(
                 json.dumps({"error": "JSON inválido"}),
@@ -171,7 +193,9 @@ def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
         ]
 
         for field in required_fields:
+
             if field not in data:
+
                 return func.HttpResponse(
                     json.dumps({"error": f"Falta campo: {field}"}),
                     status_code=400,
@@ -183,8 +207,14 @@ def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
 
         cursor.execute("""
             INSERT INTO core.personas
-            (tipo_identificacion, numero_identificacion, nombre_completo,
-             correo_electronico, telefono, fecha_nacimiento)
+            (
+                tipo_identificacion,
+                numero_identificacion,
+                nombre_completo,
+                correo_electronico,
+                telefono,
+                fecha_nacimiento
+            )
             VALUES (%s,%s,%s,%s,%s,%s)
             RETURNING id
         """, (
@@ -197,6 +227,7 @@ def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
         ))
 
         new_id = cursor.fetchone()[0]
+
         conn.commit()
 
         return func.HttpResponse(
@@ -209,6 +240,7 @@ def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     except Exception as e:
+
         logging.error(str(e))
 
         if conn:
@@ -221,8 +253,10 @@ def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     finally:
+
         if cursor:
             cursor.close()
+
         if conn:
             conn.close()
 
@@ -232,10 +266,12 @@ def crear_persona(req: func.HttpRequest) -> func.HttpResponse:
 # =========================
 @app.route(route="personas/{id}", methods=["DELETE"], auth_level=func.AuthLevel.ANONYMOUS)
 def eliminar_persona(req: func.HttpRequest) -> func.HttpResponse:
+
     conn = None
     cursor = None
 
     try:
+
         persona_id = req.route_params.get("id")
 
         if not persona_id:
@@ -248,15 +284,21 @@ def eliminar_persona(req: func.HttpRequest) -> func.HttpResponse:
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("DELETE FROM core.personas WHERE id=%s", (persona_id,))
+        cursor.execute(
+            "DELETE FROM core.personas WHERE id=%s",
+            (persona_id,)
+        )
+
         conn.commit()
 
         return func.HttpResponse(
             json.dumps({"mensaje": "Persona eliminada"}),
-            mimetype="application/json"
+            mimetype="application/json",
+            status_code=200
         )
 
     except Exception as e:
+
         logging.error(str(e))
 
         return func.HttpResponse(
@@ -266,8 +308,10 @@ def eliminar_persona(req: func.HttpRequest) -> func.HttpResponse:
         )
 
     finally:
+
         if cursor:
             cursor.close()
+
         if conn:
             conn.close()
 
@@ -282,21 +326,20 @@ def login(req: func.HttpRequest) -> func.HttpResponse:
     cursor = None
 
     try:
+
         data = req.get_json()
 
         tipo = data.get("tipo_identificacion")
         numero = data.get("numero_identificacion")
-        
-        
 
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
-        SELECT nombre_completo
-        FROM core.personas
-        WHERE tipo_identificacion = %s
-        AND numero_identificacion = %s
+            SELECT nombre_completo
+            FROM core.personas
+            WHERE tipo_identificacion = %s
+            AND numero_identificacion = %s
         """, (tipo, numero))
 
         user = cursor.fetchone()
@@ -332,96 +375,140 @@ def login(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json"
         )
 
-
     finally:
+
         if cursor:
             cursor.close()
+
         if conn:
             conn.close()
-            
+
+
+# =========================
+# CHAT IA
+# =========================
 @app.route(route="chat", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
-    print("CHAT EJECUTANDO")
-    print("BODY:", req.get_body())
-    
+
     try:
+
+        logging.info("CHAT EJECUTANDO")
 
         data = req.get_json()
 
-        emocion = data.get("emocion")
-        mensaje = data.get("mensaje")
+        emocion = data.get("emocion", "")
+        mensaje = data.get("mensaje", "")
 
-        model = genai.GenerativeModel("gemini-2.5-flash-lite")
-        print("ANTES GEMINI")
+        model = genai.GenerativeModel("gemini-1.5-flash")
+
         prompt = f"""
-Actúa como un asistente de bienestar emocional llamado "Bao".
+Actúa como Bao, un asistente de bienestar emocional diseñado
+para estudiantes universitarios de ingeniería de sistemas.
 
-Tu propósito es brindar acompañamiento emocional preventivo
-a estudiantes de ingeniería de sistemas de la Universidad EAN.
-
-Tu personalidad debe ser:
-- empática
-- respetuosa
-- positiva
-- calmada
+Tu personalidad debe sentirse:
+- humana
 - cercana
+- empática
+- calmada
+- conversacional
+- natural
 
-Nunca juzgues al usuario.
+NO hables como terapeuta clínico.
+NO uses respuestas robóticas o genéricas.
+NO repitas siempre las mismas frases.
 
-Tu objetivo es ayudar a los estudiantes a:
-- manejar el estrés académico
-- regular sus emociones
-- encontrar estrategias saludables para su bienestar
+Tu objetivo es:
+- acompañar emocionalmente
+- ayudar a manejar estrés académico
+- fomentar regulación emocional saludable
+- brindar apoyo emocional preventivo
 
-El estudiante reporta la emoción principal:
+El estudiante reporta esta emoción:
 {emocion}
 
 Mensaje del estudiante:
 {mensaje}
 
-Analiza el mensaje y genera una respuesta que incluya:
+INSTRUCCIONES IMPORTANTES:
 
-1. Un mensaje de apoyo emocional empático.
-2. Consejos prácticos para manejar la emoción.
-3. Un ejercicio sencillo de regulación emocional
-   (respiración, pausa mental, mindfulness o relajación).
-4. Una recomendación musical positiva que ayude a mejorar el estado emocional.
+1. Responde de forma NATURAL y conversacional.
+2. Primero valida emocionalmente al estudiante.
+3. Luego ofrece apoyo emocional breve y humano.
+4. NO entregues automáticamente ejercicios,
+   música y consejos completos.
+5. En cambio, ofrece opciones para que el usuario elija
+   qué tipo de ayuda desea recibir. Todo esto a final de cada mensaje.
 
-Reglas importantes:
+Las opciones posibles son:
+- ejercicio
+- musica
+- consejos
+- respiracion
+- manejo_estres
 
-- Nunca refuerces emociones negativas.
-- No promuevas tristeza, ansiedad o desesperanza.
-- Siempre orienta la respuesta hacia la regulación emocional.
-- Usa un lenguaje claro y amigable para estudiantes universitarios.
-- Evita respuestas demasiado largas.
+IMPORTANTE:
+- Nunca hagas sentir juzgado al usuario.
+- Nunca refuerces desesperanza o ansiedad.
+- Mantén respuestas relativamente breves.
+- Usa lenguaje cálido y universitario.
+- Evita parecer un sistema automatizado.
 
-Responde únicamente en formato JSON con esta estructura:
+Responde ÚNICAMENTE en JSON válido con esta estructura:
 
-{
-"apoyo": "mensaje empático breve",
-"consejos": "2 o 3 recomendaciones prácticas",
-"ejercicio": "ejercicio corto paso a paso",
-"musica": "nombre de la canción o tipo de música recomendada"
-}
+{{
+  "mensaje": "respuesta emocional natural y humana",
+  "opciones": [
+    "ejercicio",
+    "musica",
+    "consejos"
+  ]
+}}
 
-No incluyas texto fuera del JSON.
+NO incluyas texto fuera del JSON.
 """
+
         response = model.generate_content(prompt)
-        print(response.text)
+
+        texto = response.text.strip()
+
+        # limpiar markdown
+        texto = texto.replace("```json", "")
+        texto = texto.replace("```", "")
+        texto = texto.strip()
+
+        logging.info(f"RESPUESTA GEMINI: {texto}")
+
+        try:
+
+            respuesta_json = json.loads(texto)
+
+        except Exception as json_error:
+
+            logging.error(f"ERROR JSON GEMINI: {str(json_error)}")
+
+            return func.HttpResponse(
+                json.dumps({
+                    "error": "Gemini devolvió JSON inválido",
+                    "detalle": texto
+                }),
+                status_code=500,
+                mimetype="application/json"
+            )
+
         return func.HttpResponse(
-            json.dumps({
-                "respuesta": response.text
-            }),
+            json.dumps(respuesta_json),
             mimetype="application/json",
             status_code=200
         )
 
     except Exception as e:
-        print("ERROR REAL:")
-        print(repr(e))
+
+        logging.error(f"ERROR CHAT: {str(e)}")
+
         return func.HttpResponse(
-            
-            json.dumps({"error": str(e)}),
+            json.dumps({
+                "error": str(e)
+            }),
             mimetype="application/json",
             status_code=500
         )
