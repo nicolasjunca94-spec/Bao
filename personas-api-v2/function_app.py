@@ -1,3 +1,4 @@
+import google as genai
 import google.generativeai as genai
 import azure.functions as func
 import json
