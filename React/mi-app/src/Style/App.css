@@ -1,0 +1,293 @@
+body{
+background:linear-gradient(180deg,#e8f3ff,#f6fbff);
+font-family:'Segoe UI',sans-serif;
+}
+
+/* contenedor principal */
+
+.container{
+max-width:900px;
+margin:auto;
+}
+
+/* botones emociones */
+
+.emociones-container{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin-bottom:30px;
+}
+
+.emocion-btn{
+border:none;
+background:#9c7ab8;
+padding:10px 16px;
+border-radius:25px;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+transition:all .25s;
+font-weight:500;
+}
+
+.emocion-btn:hover{
+transform:scale(1.05);
+}
+
+.emocion-btn.activa{
+background:#4aa8ff;
+color:rgb(10, 10, 10);
+}
+
+/* chat */
+
+.chat-container{
+background:white;
+border-radius:15px;
+padding:20px;
+min-height:200px;
+box-shadow:0 5px 20px rgba(0,0,0,0.05);
+margin-bottom:20px;
+}
+
+/* mensajes */
+
+.mensaje{
+display:flex;
+margin-bottom:10px;
+}
+
+.mensaje.usuario{
+justify-content:flex-end;
+}
+
+.burbuja{
+max-width:70%;
+padding:12px 16px;
+border-radius:20px;
+}
+
+.usuario .burbuja{
+background:#4aa8ff;
+color:white;
+}
+
+.bao .burbuja{
+background:#f1f3f5;
+}
+
+/* avatar */
+
+.avatar{
+font-size:22px;
+margin-right:8px;
+}
+
+/* ========================= */
+/* CONTENEDOR GENERAL AUTH   */
+/* ========================= */
+
+.bao-auth-container{
+
+min-height:100vh;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+background:linear-gradient(180deg,#e8f3ff,#f7fbff);
+
+}
+
+/* ========================= */
+/* TARJETA LOGIN / REGISTER  */
+/* ========================= */
+
+.bao-auth-card{
+
+background:white;
+
+padding:40px;
+
+border-radius:18px;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+
+width:100%;
+
+max-width:420px;
+
+}
+
+/* tamaño mayor para register */
+
+.bao-auth-card.register{
+
+max-width:550px;
+
+}
+
+/* ========================= */
+/* LOGO BAO                  */
+/* ========================= */
+
+.bao-logo{
+
+text-align:center;
+
+margin-bottom:30px;
+
+}
+
+.bao-logo h1{
+
+font-weight:700;
+
+color:#4aa8ff;
+
+}
+
+.bao-logo p{
+
+color:#666;
+
+}
+
+/* ========================= */
+/* INPUTS                    */
+/* ========================= */
+
+.bao-input-group{
+
+margin-bottom:20px;
+
+}
+
+.bao-input-group label{
+
+font-weight:600;
+
+display:block;
+
+margin-bottom:6px;
+
+}
+
+.bao-input-group input{
+
+width:100%;
+
+padding:12px;
+
+border-radius:10px;
+
+border:1px solid #ddd;
+
+}
+
+/* ========================= */
+/* GRID REGISTER             */
+/* ========================= */
+
+.bao-grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:12px;
+
+margin-bottom:20px;
+
+}
+
+/* ========================= */
+/* BOTÓN PRINCIPAL           */
+/* ========================= */
+
+.bao-btn{
+
+width:100%;
+
+padding:12px;
+
+border:none;
+
+background:#4aa8ff;
+
+color:white;
+
+font-weight:600;
+
+border-radius:10px;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+.bao-btn:hover{
+
+background:#3a95e0;
+
+}
+
+/* ========================= */
+/* MENSAJES                  */
+/* ========================= */
+
+.bao-error{
+
+background:#ffe2e2;
+
+padding:10px;
+
+border-radius:10px;
+
+margin-top:20px;
+
+text-align:center;
+
+}
+
+.bao-success{
+
+background:#e0ffe6;
+
+padding:10px;
+
+border-radius:10px;
+
+margin-top:20px;
+
+text-align:center;
+
+}
+
+/* ========================= */
+/* FOOTER AUTH               */
+/* ========================= */
+
+.bao-auth-footer{
+
+text-align:center;
+
+margin-top:20px;
+
+}
+
+.bao-auth-footer span{
+
+color:#4aa8ff;
+
+cursor:pointer;
+
+font-weight:600;
+
+margin-left:5px;
+
+}
