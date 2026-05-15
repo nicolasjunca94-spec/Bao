@@ -1,96 +1,59 @@
-bin/
-**/bin/
-!Modules/**
-obj
-csx
-.vs
-edge
-Publish
-
-*.user
-*.suo
-*.cscfg
-*.Cache
-project.lock.json
-
-/packages
-/TestResults
-
-/tools/NuGet.exe
-/App_Data
-/secrets
-/data
-.secrets
-appsettings.json
-local.settings.json
-
-node_modules
-dist
-
-# Local python packages
-.python_packages/
-
-# Python Environments
-.env
-.venv
+# =========================
+# Python
+# =========================
+.venv/
+venv/
 env/
-venv/
 ENV/
-env.bak/
-venv.bak/
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Azurite artifacts
-__blobstorage__
-__queuestorage__
-__azurite_db*__.json
-
-# Node
-node_modules/
-dist/
-
-# Python
-.venv/
-__pycache__/
 .python_packages/
-
-# Azure
-local.settings.json
-
-# VSCode
-.vscode/
-
-# Logs
-*.log
-
-local.settings.json
-.venv
-.python_packages
-__pycache__https://go.microsoft.com/fwlink/?linkid=2271136
-
-# Python
-.venv/
-venv/
 __pycache__/
 *.pyc
+*.pyo
+*$py.class
 
-# Node
+# =========================
+# Node / React
+# =========================
 node_modules/
 build/
+dist/
 
+# =========================
 # Azure
+# =========================
 .azure/
+local.settings.json
 
+# =========================
 # VS Code
+# =========================
 .vscode/
+.vs/
 
-# Environment
-.env
+# =========================
+# Logs
+# =========================
+*.log
 
-# OS
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
+
+# =========================
+# Secrets / Env
+# =========================
+.env
+secrets/
+.secrets/
+appsettings.json
+
+# =========================
+# Misc
+# =========================
+bin/
+obj/
+packages/
+TestResults/
+Publish/
