@@ -1,4 +1,5 @@
-import google.generativeai as genai
+
+from google import genai
 import azure.functions as func
 import json
 import logging
@@ -398,7 +399,8 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
 
         emocion = data.get("emocion", "")
         mensaje = data.get("mensaje", "")
-
+        
+        logging.info("ANTES DE GENERATE_CONTENT")
         model = genai.GenerativeModel("gemini-1.5-flash")
 
         prompt = f"""
@@ -466,7 +468,7 @@ Responde ÚNICAMENTE en JSON válido con esta estructura:
 
 NO incluyas texto fuera del JSON.
 """
-
+        logging.info("DESPUES DE GENERATE_CONTENT")
         response = model.generate_content(prompt)
 
         texto = response.text.strip()
