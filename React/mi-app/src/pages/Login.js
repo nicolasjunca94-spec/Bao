@@ -1,83 +1,113 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login({ setUser }) {
-  const [tipo, setTipo] = useState("");
-  const [numero, setNumero] = useState("");
-  const [mensaje, setMensaje] = useState("");
+function Login() {
+  const [form, setForm] = useState({
+    tipo_identificacion: "",
+    numero_identificacion: "",
+  });
 
+  const [mensaje, setMensaje] = useState("");
+  const [esExito, setEsExito] = useState(true);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("https://function-bao-ccb0avh5f0dnaka0.centralus-01.azurewebsites.net/api/login", // ...
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            tipo_identificacion: tipo,
-            numero_identificacion: numero
-          })
-        }
-      );
+      // Consume directamente el endpoint de la Azure Function mapeado en Vercel
+      const url = `${process.env.REACT_APP_API_URL}/login`;
+      console.log("Iniciando sesión en:", url);
 
-      const data = await response.json();
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(data.usuario));
-        setUser(data.usuario);
-        navigate("/");
+        setEsExito(true);
+        setMensaje(`¡Bienvenido de vuelta, ${data.usuario || "Estudiante"}! 🐼`);
+        
+        // Guardamos el nombre del usuario en el almacenamiento local por si lo necesitas en el Navbar o Home
+        if (data.usuario) {
+          localStorage.setItem("usuario_nombre", data.usuario);
+        }
+
+        // Redirección al módulo del chat de BAO tras un breve retraso
+        setTimeout(() => navigate("/home"), 1500);
       } else {
-        setMensaje(data.mensaje);
+        setEsExito(false);
+        setMensaje(data.error || "Credenciales incorrectas. Inténtalo de nuevo.");
       }
     } catch (error) {
-      setMensaje("Error al conectar con el servidor");
+      console.error("Error en el login:", error);
+      setEsExito(false);
+      setMensaje("Error al conectar con el servidor de autenticación");
     }
   };
 
   return (
     <div className="bao-auth-container">
-      <div className="bao-auth-card">
+      <div className="bao-auth-card login">
         <div className="bao-logo">
-          <h1>🐼 BAO</h1>
-          <p>Tu asistente emocional universitario</p>
+          <h1>🐼 Ingresar a BAO</h1>
+          <p>Tu espacio de acompañamiento universitario</p>
         </div>
 
-        <form onSubmit={handleLogin}>
-          <div className="bao-input-group">
-            <label>Tipo de Documento</label>
+        <form onSubmit={handleSubmit}>
+          <div className="bao-form-group">
+            <label htmlFor="tipo_identificacion">Tipo de Documento</label>
+            <select
+              id="tipo_identificacion"
+              name="tipo_identificacion"
+              value={form.tipo_identificacion}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona una opción</option>
+              <option value="CC">Cédula de Ciudadanía (CC)</option>
+              <option value="TI">Tarjeta de Identidad (TI)</option>
+              <option value="CE">Cédula de Extranjería (CE)</option>
+            </select>
+          </div>
+
+          <div className="bao-form-group mt-3">
+            <label htmlFor="numero_identificacion">Número de Documento</label>
             <input
+              id="numero_identificacion"
               type="text"
-              placeholder="Ej: CC, TI, CE"
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
+              name="numero_identificacion"
+              placeholder="Ingresa tu número de identificación"
+              value={form.numero_identificacion}
+              onChange={handleChange}
               required
             />
           </div>
 
-          <div className="bao-input-group">
-            <label>Número de Documento</label>
-            <input
-              type="text"
-              placeholder="Ingresa tu número"
-              value={numero}
-              onChange={(e) => setNumero(e.target.value)}
-              required
-            />
-          </div>
-
-          <button className="bao-btn">Ingresar a BAO</button>
+          <button className="bao-btn mt-4">Iniciar Sesión</button>
         </form>
 
-        {mensaje && <div className="bao-error">{mensaje}</div>}
+        {mensaje && (
+          <div className={esExito ? "bao-success" : "bao-error"}>
+            {mensaje}
+          </div>
+        )}
 
         <div className="bao-auth-footer">
           <p>
-            ¿No tienes cuenta?
+            ¿Eres nuevo por aquí?
             <span onClick={() => navigate("/register")}> Crear una cuenta</span>
           </p>
         </div>
