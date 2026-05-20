@@ -12,6 +12,7 @@ function Register() {
   });
 
   const [mensaje, setMensaje] = useState("");
+  const [esExito, setEsExito] = useState(true);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,26 +26,31 @@ function Register() {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/personas`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        }
-      );
+      // Endpoint exacto que procesa el POST en tu Function App de Azure
+      const url = `${process.env.REACT_APP_API_URL}/personas`;
+      console.log("Enviando datos de registro a:", url);
 
-      const data = await response.json();
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json().catch(() => ({}));
 
       if (response.ok) {
+        setEsExito(true);
         setMensaje("Usuario registrado correctamente 🐼");
         setTimeout(() => navigate("/login"), 1500);
       } else {
+        setEsExito(false);
         setMensaje(data.error || "Error al registrar usuario");
       }
     } catch (error) {
+      console.error("Error en el fetch de registro:", error);
+      setEsExito(false);
       setMensaje("Error al conectar con el servidor");
     }
   };
@@ -59,18 +65,24 @@ function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="bao-grid">
-            <input
-              type="text"
+            {/* Cambiado a select para asegurar la consistencia con la DB */}
+            <select
               name="tipo_identificacion"
-              placeholder="Tipo Identificación"
+              value={form.tipo_identificacion}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="">Tipo Identificación</option>
+              <option value="CC">Cédula de Ciudadanía (CC)</option>
+              <option value="TI">Tarjeta de Identidad (TI)</option>
+              <option value="CE">Cédula de Extranjería (CE)</option>
+            </select>
 
             <input
               type="text"
               name="numero_identificacion"
               placeholder="Número Identificación"
+              value={form.numero_identificacion}
               onChange={handleChange}
               required
             />
@@ -79,6 +91,7 @@ function Register() {
               type="text"
               name="nombre_completo"
               placeholder="Nombre completo"
+              value={form.nombre_completo}
               onChange={handleChange}
               required
             />
@@ -87,6 +100,7 @@ function Register() {
               type="email"
               name="correo_electronico"
               placeholder="Correo electrónico"
+              value={form.correo_electronico}
               onChange={handleChange}
               required
             />
@@ -95,12 +109,14 @@ function Register() {
               type="text"
               name="telefono"
               placeholder="Teléfono"
+              value={form.telefono}
               onChange={handleChange}
             />
 
             <input
               type="date"
               name="fecha_nacimiento"
+              value={form.fecha_nacimiento}
               onChange={handleChange}
             />
           </div>
@@ -108,7 +124,12 @@ function Register() {
           <button className="bao-btn">Registrarme en BAO</button>
         </form>
 
-        {mensaje && <div className="bao-success">{mensaje}</div>}
+        {/* Renderizado dinámico de la alerta según el estado de la respuesta */}
+        {mensaje && (
+          <div className={esExito ? "bao-success" : "bao-error"}>
+            {mensaje}
+          </div>
+        )}
 
         <div className="bao-auth-footer">
           <p>
