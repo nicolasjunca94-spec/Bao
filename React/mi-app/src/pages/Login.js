@@ -22,8 +22,8 @@ function Login() {
     e.preventDefault();
 
     try {
-      // Consume directamente el endpoint de la Azure Function mapeado en Vercel
-      const url = `${process.env.REACT_APP_API_URL}/login`;
+      // URL directa quemada en el código sin usar variables de entorno
+      const url = "https://function-bao-ccb0avh5f0dnaka0.centralus-01.azurewebsites.net/api/login";
       console.log("Iniciando sesión en:", url);
 
       const response = await fetch(url, {
@@ -40,12 +40,10 @@ function Login() {
         setEsExito(true);
         setMensaje(`¡Bienvenido de vuelta, ${data.usuario || "Estudiante"}! 🐼`);
         
-        // Guardamos el nombre del usuario en el almacenamiento local por si lo necesitas en el Navbar o Home
         if (data.usuario) {
           localStorage.setItem("usuario_nombre", data.usuario);
         }
 
-        // Redirección al módulo del chat de BAO tras un breve retraso
         setTimeout(() => navigate("/home"), 1500);
       } else {
         setEsExito(false);
@@ -78,7 +76,7 @@ function Login() {
             >
               <option value="">Selecciona una opción</option>
               <option value="CC">Cédula de Ciudadanía (CC)</option>
-              <option value="TI">Tarjeta de Identidad (TI)</option>
+              <option value="TI">Tarjeta de Identity (TI)</option>
               <option value="CE">Cédula de Extranjería (CE)</option>
             </select>
           </div>

@@ -12,7 +12,6 @@ function Register() {
   });
 
   const [mensaje, setMensaje] = useState("");
-  const [esExito, setEsExito] = useState(true);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,31 +25,27 @@ function Register() {
     e.preventDefault();
 
     try {
-      // Endpoint exacto que procesa el POST en tu Function App de Azure
-      const url = `${process.env.REACT_APP_API_URL}/personas`;
-      console.log("Enviando datos de registro a:", url);
+      // URL directa quemada sin variables de entorno
+      const response = await fetch(
+        "https://function-bao-ccb0avh5f0dnaka0.centralus-01.azurewebsites.net/api/personas",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json();
 
       if (response.ok) {
-        setEsExito(true);
         setMensaje("Usuario registrado correctamente 🐼");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        setEsExito(false);
         setMensaje(data.error || "Error al registrar usuario");
       }
     } catch (error) {
-      console.error("Error en el fetch de registro:", error);
-      setEsExito(false);
       setMensaje("Error al conectar con el servidor");
     }
   };
@@ -65,7 +60,7 @@ function Register() {
 
         <form onSubmit={handleSubmit}>
           <div className="bao-grid">
-            {/* Cambiado a select para asegurar la consistencia con la DB */}
+            {/* Menú desplegable idéntico al del Login */}
             <select
               name="tipo_identificacion"
               value={form.tipo_identificacion}
@@ -124,12 +119,7 @@ function Register() {
           <button className="bao-btn">Registrarme en BAO</button>
         </form>
 
-        {/* Renderizado dinámico de la alerta según el estado de la respuesta */}
-        {mensaje && (
-          <div className={esExito ? "bao-success" : "bao-error"}>
-            {mensaje}
-          </div>
-        )}
+        {mensaje && <div className="bao-success">{mensaje}</div>}
 
         <div className="bao-auth-footer">
           <p>
