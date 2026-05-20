@@ -12,8 +12,7 @@ function Login({ setUser }) {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/login`,
+      const response = await fetch("https://function-bao-ccb0avh5f0dnaka0.centralus-01.azurewebsites.net/api/login", // ...
         {
           method: "POST",
           headers: {
