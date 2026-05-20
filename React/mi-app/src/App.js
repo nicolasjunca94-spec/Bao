@@ -62,7 +62,7 @@ isAuthenticated
 {/* HOME PROTEGIDA */}
 
 <Route
-path="/"
+path="/Home"
 element={
 isAuthenticated
 ? <Home user={user}/>
