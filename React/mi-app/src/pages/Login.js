@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Login({ setUser }) {
   const [form, setForm] = useState({
     tipo_identificacion: "",
     numero_identificacion: "",
@@ -41,10 +41,13 @@ function Login() {
         setMensaje(`¡Bienvenido de vuelta, ${data.usuario || "Estudiante"}! 🐼`);
         
         if (data.usuario) {
+          // 1. Almacenamos el nombre en el localStorage para persistencia
           localStorage.setItem("usuario_nombre", data.usuario);
+          
+          // 2. Cambiamos el estado global en App.js de inmediato.
+          // App.js detectará el cambio y redirigirá síncronamente a /home sin parpadeos.
+          setUser(data.usuario);
         }
-
-        setTimeout(() => navigate("/home"), 1500);
       } else {
         setEsExito(false);
         setMensaje(data.error || "Credenciales incorrectas. Inténtalo de nuevo.");
@@ -76,7 +79,7 @@ function Login() {
             >
               <option value="">Selecciona una opción</option>
               <option value="CC">Cédula de Ciudadanía (CC)</option>
-              <option value="TI">Tarjeta de Identity (TI)</option>
+              <option value="TI">Tarjeta de Identidad (TI)</option>
               <option value="CE">Cédula de Extranjería (CE)</option>
             </select>
           </div>
